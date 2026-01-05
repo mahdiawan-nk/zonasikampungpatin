@@ -21,33 +21,91 @@ class Create extends Component
     public $savedPolygons = [];
     public $offlineLayers = [];
     public bool $isReadySubmit = false;
+
+    public $ownerId = null;
     protected $listeners = [
         'polygonClicked' => 'openModalFromMap'
     ];
     public function mount()
     {
         $this->dataUser = User::where('role', 'Pemilik Kolam')->get();
+        $this->ownerId = auth()->user()->isAdmin() ? null : auth()->user()->id;
+        $this->user_id = $this->ownerId;
         $this->loadSavedPolygons();
         $this->loadOfflineLayers();
     }
 
+    // public function loadOfflineLayers()
+    // {
+    //     // Ambil data kolam dan index dengan feature_id
+    //     $kolams = DataKolam::query()
+    //         ->forUser()
+    //         ->select('feature_id', 'nama_kolam')->get()
+    //         ->keyBy('feature_id');
+
+    //     $kolamsId = $kolams->keys()->toArray(); // lebih efisien
+
+    //     $this->offlineLayers = MapLayer::with('features')->get()->map(function ($layer) use ($kolams, $kolamsId) {
+    //         return [
+    //             'id' => $layer->layer_id,
+    //             'type' => $layer->layer_type,
+    //             'paint' => $layer->paint,
+    //             'source_layer' => $layer->source_layer,
+    //             'data' => [
+    //                 'type' => 'FeatureCollection',
+    //                 'features' => $layer->features->map(function ($f) use ($kolams, $kolamsId) {
+    //                     return [
+    //                         'type' => 'Feature',
+    //                         'id' => $f->feature_id,
+    //                         'geometry' => [
+    //                             'type' => $f->geometry_type,
+    //                             'coordinates' => json_decode($f->coordinates, true),
+    //                         ],
+    //                         'properties' => [
+    //                             ...json_decode($f->properties, true),
+    //                             'is_kolam' => in_array($f->feature_id, $kolamsId) ? 1 : 0,
+    //                             'name' => $kolams[$f->feature_id]->nama_kolam ?? null,
+    //                         ],
+    //                     ];
+    //                 })
+    //             ]
+    //         ];
+    //     })->toArray();
+    // }
+
     public function loadOfflineLayers()
     {
-        // Ambil data kolam dan index dengan feature_id
-        $kolams = DataKolam::select('feature_id', 'nama_kolam')->get()
+        $user = auth()->user();
+        $isAdmin = $user->isAdmin();
+
+        // Semua kolam (untuk mapping ownership)
+        $allKolams = DataKolam::query()
+            ->select('feature_id', 'nama_kolam', 'user_id')
+            ->get()
             ->keyBy('feature_id');
 
-        $kolamsId = $kolams->keys()->toArray(); // lebih efisien
+        $this->offlineLayers = MapLayer::with('features')->get()
+            ->map(function ($layer) use ($allKolams, $user, $isAdmin) {
 
-        $this->offlineLayers = MapLayer::with('features')->get()->map(function ($layer) use ($kolams, $kolamsId) {
-            return [
-                'id' => $layer->layer_id,
-                'type' => $layer->layer_type,
-                'paint' => $layer->paint,
-                'source_layer' => $layer->source_layer,
-                'data' => [
-                    'type' => 'FeatureCollection',
-                    'features' => $layer->features->map(function ($f) use ($kolams, $kolamsId) {
+                $features = $layer->features
+                    ->filter(function ($f) use ($allKolams, $user, $isAdmin) {
+
+                        if ($isAdmin) {
+                            return true;
+                        }
+
+                        if (!$allKolams->has($f->feature_id)) {
+                            // kolam belum terdaftar → boleh tampil
+                            return true;
+                        }
+
+                        // kolam terdaftar → hanya milik user sendiri
+                        return $allKolams[$f->feature_id]->user_id === $user->id;
+                    })
+                    ->map(function ($f) use ($allKolams, $user) {
+
+                        $kolam = $allKolams->get($f->feature_id);
+
                         return [
                             'type' => 'Feature',
                             'id' => $f->feature_id,
@@ -57,16 +115,30 @@ class Create extends Component
                             ],
                             'properties' => [
                                 ...json_decode($f->properties, true),
-                                'is_kolam' => in_array($f->feature_id, $kolamsId) ? 1 : 0,
-                                'name' => $kolams[$f->feature_id]->nama_kolam ?? null,
+
+                                // UI FLAG
+                                'owned_by_me' => $kolam && $kolam->user_id === $user->id,
+                                'is_registered' => (bool) $kolam,
+                                'selected' => false,
+                                'name' => $kolam?->nama_kolam,
                             ],
                         ];
-                    })
-                ]
-            ];
-        })->toArray();
-    }
+                    });
 
+                return [
+                    'id' => $layer->layer_id,
+                    'type' => $layer->layer_type,
+                    'paint' => $layer->paint,
+                    'source_layer' => $layer->source_layer,
+                    'data' => [
+                        'type' => 'FeatureCollection',
+                        'features' => $features->values(),
+                    ],
+                ];
+            })
+            ->values()
+            ->toArray();
+    }
 
 
     public function loadSavedPolygons()

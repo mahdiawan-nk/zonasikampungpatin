@@ -42,11 +42,11 @@
                             <?php echo e(($data->currentPage() - 1) * $data->perPage() + $index + 1); ?>
 
                         </td>
-                        <td class="px-4 py-3"><?php echo e($item->tanggal_penebaran); ?></td>
-                        <td class="px-4 py-3"><?php echo e($item->kolam->nama_kolam); ?></td>
-                        <td class="px-4 py-3"><?php echo e($item->jenis_benih); ?></td>
-                        <td class="px-4 py-3"><?php echo e($item->jumlah_ikan); ?></td> 
-                        <td class="px-4 py-3"><?php echo e($item->berat_rata_rata); ?></td>
+                        <td class="px-4 py-3"><?php echo e($item?->tanggal_penebaran); ?></td>
+                        <td class="px-4 py-3"><?php echo e($item?->kolam?->nama_kolam); ?></td>
+                        <td class="px-4 py-3"><?php echo e($item?->jenis_benih); ?></td>
+                        <td class="px-4 py-3"><?php echo e($item?->jumlah_ikan); ?></td> 
+                        <td class="px-4 py-3"><?php echo e($item?->berat_rata_rata); ?></td>
 
                         <td class="px-4 py-3">
                             <?php if (isset($component)) { $__componentOriginalc04b147acd0e65cc1a77f86fb0e81580 = $component; } ?>

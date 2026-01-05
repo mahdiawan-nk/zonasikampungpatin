@@ -35,4 +35,18 @@ class DataKolam extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function scopeForUser($query)
+    {
+        if (auth()->check() && !auth()->user()->isAdmin()) {
+            $query->where('user_id', auth()->id());
+        }
+
+        return $query;
+    }
+
+    public function seedings()
+    {
+        return $this->hasMany(DataSeeding::class, 'data_kolam_id', 'id');
+    }
 }

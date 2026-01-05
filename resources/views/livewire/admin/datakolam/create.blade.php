@@ -4,22 +4,38 @@
 
 <section class="mt-0 px-2 lg:px-2" x-data="mapOfflineComponent()" x-init="initMap()"
     x-on:successCreated.window="petaOffline()">
-    <div class="relative grid grid-cols-2 gap-4">
-        <div class="bg-gray-800 rounded-lg">
+    <div class="relative grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-lg">
             <div class="p-3">
                 <h2 class="text-2xl font-semibold dark:text-white">Peta Kolam Ikan</h2>
             </div>
-            <div id="legend"
-                class="absolute top-24 left-4 bg-white shadow-xl rounded-md p-3 z-50 text-sm border border-gray-200">
+            <div class="absolute top-15 left-2 z-30">
+                <flux:button icon="rectangle-group" @click="legendShow = !legendShow" size="sm" />
+
+            </div>
+
+            <div id="legend" x-show="legendShow" x-transition
+                class="absolute top-25 left-2 bg-white shadow-xl rounded-md p-3 z-50 text-sm border border-gray-200">
                 <h3 class="font-semibold mb-2 dark:text-slate-900">Legenda</h3>
                 <div id="legend-items" class="dark:text-slate-900"></div>
+                <div class="mt-3 border-t pt-3 text-xs text-gray-600">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-6 h-4 bg-red-500"></span> Kolam saya
+                    </div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-6 h-4 bg-green-500"></span> Dipilih
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-4 bg-blue-400"></span> Tersedia
+                    </div>
+                </div>
             </div>
             <div id="map" class="w-full h-[100vh] overflow-hidden" wire:ignore></div>
         </div>
         <div class="bg-gray-800 rounded-lg p-6">
             <form wire:submit.prevent="store" class="space-y-6">
                 <div>
-                    <flux:heading size="lg">Update Info Kolam Pemilik</flux:heading>
+                    <flux:heading size="lg">Create Info Kolam Pemilik</flux:heading>
                 </div>
                 <flux:field>
                     <flux:label>Nama Kolam</flux:label>
@@ -55,16 +71,19 @@
                     </flux:radio.group>
                     <flux:error name="status" />
                 </flux:field>
-                <flux:field>
-                    <flux:label>Pemilik</flux:label>
-                    <flux:select wire:model="user_id" :disabled="!$this->isReadySubmit" placeholder="Pilih Pemilik...">
-                        <flux:select.option value="" selected>Pilih Pemilik</flux:select.option>
-                        @foreach ($dataUser as $list)
-                            <flux:select.option value="{{ $list->id }}">{{ $list->name }}</flux:select.option>
-                        @endforeach
-                    </flux:select>
-                    <flux:error name="user_id" />
-                </flux:field>
+                @if (Auth::user()->role == 'Administrator')
+                    <flux:field>
+                        <flux:label>Pemilik</flux:label>
+                        <flux:select wire:model="user_id" :disabled="!$this->isReadySubmit"
+                            placeholder="Pilih Pemilik...">
+                            <flux:select.option value="" selected>Pilih Pemilik</flux:select.option>
+                            @foreach ($dataUser as $list)
+                                <flux:select.option value="{{ $list->id }}">{{ $list->name }}</flux:select.option>
+                            @endforeach
+                        </flux:select>
+                        <flux:error name="user_id" />
+                    </flux:field>
+                @endif
                 <div class="flex">
                     <flux:spacer />
                     <flux:button type="submit" variant="primary">Save changes</flux:button>
@@ -72,15 +91,18 @@
             </form>
         </div>
     </div>
-    <div x-show="loading" x-cloak class="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
-        style="backdrop-filter: blur(2px);">
-        <div class="bg-white rounded-lg p-6 w-72 shadow-xl text-center">
-            <div class="animate-spin h-10 w-10 border-4 border-gray-300 border-t-blue-600 rounded-full mx-auto mb-4">
+    <template x-if="loading">
+        <div x-cloak class="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+            style="backdrop-filter: blur(2px);">
+            <div class="bg-white rounded-lg p-6 w-72 shadow-xl text-center">
+                <div
+                    class="animate-spin h-10 w-10 border-4 border-gray-300 border-t-blue-600 rounded-full mx-auto mb-4">
+                </div>
+                <p class="font-semibold text-gray-800">Menyimpan data polygon di background service...</p>
+                <p class="text-gray-500 text-sm mt-1">Harap tunggu sebentar.</p>
             </div>
-            <p class="font-semibold text-gray-800">Menyimpan data polygon di background service...</p>
-            <p class="text-gray-500 text-sm mt-1">Harap tunggu sebentar.</p>
         </div>
-    </div>
+    </template>
 </section>
 @push('scripts')
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.17.0-beta.1/mapbox-gl.js"></script>
@@ -97,6 +119,7 @@
                 accessToken: 'pk.eyJ1IjoiZGV2LWNvZGVycyIsImEiOiJja3l4YmM1YnQwZ3VrMndwOGFpcnhobGtpIn0.K-67FDARYgR7zEXLSbR4bg',
                 legendItems: [],
                 loading: false,
+                legendShow: false,
 
                 initMap() {
                     window.addEventListener('offline-layers-updated', e => {
@@ -106,10 +129,6 @@
                         this.loading = false; // Hide loading setelah Livewire terima data
                     });
                     this.legendItems = [{
-                            id: 'datakolamikan',
-                            label: 'Kolam Ikan'
-                        },
-                        {
                             id: 'batasdusun',
                             label: 'Batas Dusun'
                         },
@@ -157,22 +176,34 @@
                                 data: layer.data
                             });
                         }
+                        const basePaint = typeof layer.paint === 'string' ?
+                            JSON.parse(layer.paint) :
+                            layer.paint;
 
+                        let paint = basePaint;
+
+                        if (layer.type === 'fill') {
+                            paint = {
+                                ...basePaint,
+                                'fill-color': [
+                                    'case',
+                                    ['==', ['get', 'owned_by_me'], true],
+                                    '#ff0000',
+                                    ['==', ['get', 'is_registered'], false],
+                                    '#45e9f2',
+                                    ['==', ['get', 'is_registered'], true], '#22c55e',
+                                    '#ccc'
+                                ],
+                            };
+                        }
                         //⛔ Tambahkan layer polygon jika belum ada
                         if (!this.mapOffline.getLayer(layer.id)) {
+
                             this.mapOffline.addLayer({
                                 id: layer.id,
-                                type: layer.type,
+                                type: layer.type ?? 'fill',
                                 source: layer.id,
-                                paint: {
-                                    ...JSON.parse(layer.paint),
-                                    'fill-color': [
-                                        'case',
-                                        ['==', ['get', 'is_kolam'], 1],
-                                        '#ff0000',
-                                        '#45e9f2'
-                                    ],
-                                }
+                                paint: paint
                             });
                         }
 
@@ -186,7 +217,7 @@
                                 geometry: center.geometry,
                                 properties: {
                                     label: f.properties?.name ?? f.properties?.feature_id ??
-                                        "Polygon", // pilih label dari properties
+                                        "not owned", // pilih label dari properties
                                 }
                             };
                         });
@@ -237,29 +268,58 @@
                     legendContainer.innerHTML = '';
 
                     this.legendItems.forEach(item => {
-                        const color = this.getLayerColor(this.mapOffline, item.id);
+                        const color = this.getLayerColor(this.mapOffline, item.id) ?? '#9ca3af';
 
-                        const displayColor = color || '#cccccc';
+                        const styleLayer = this.mapOffline
+                            .getStyle()
+                            .layers
+                            .find(l => l.id === item.id);
 
-                        const styleLayer = this.mapOffline.getStyle().layers.find(l => l.id === item.id);
-                        const kind = styleLayer ? styleLayer.type : 'fill';
-                        const el = document.createElement('div');
-                        el.className = 'flex items-center space-x-2 mb-1';
+                        const kind = styleLayer?.type ?? 'fill';
+
+                        const row = document.createElement('div');
+                        row.className = `
+                                        flex items-center justify-between mb-1
+                                        rounded-md
+                                        hover:bg-gray-100
+                                        transition
+                                    `;
+
+                        // Left: symbol + label
+                        const left = document.createElement('div');
+                        left.className = 'flex items-center gap-3';
 
                         if (kind === 'line') {
-                            el.innerHTML = `
-                                        <span style="display:inline-block;width:28px;height:6px;background:${displayColor};border:1px solid #0003"></span>
-                                        <span>${item.label}</span>
-                                    `;
+                            left.innerHTML = `
+                                            <span
+                                                class="block"
+                                                style="
+                                                    width:32px;
+                                                    height:4px;
+                                                    background:${color};
+                                                    border-radius:2px;
+                                                ">
+                                            </span>
+                                            <span class="text-xs text-gray-800">${item.label}</span>
+                                        `;
                         } else {
-                            // default fill / circle
-                            el.innerHTML = `
-                                        <span style="display:inline-block;width:16px;height:16px;background:${displayColor};border:1px solid #0003;border-radius:3px"></span>
-                                        <span>${item.label}</span>
-                                    `;
+                            left.innerHTML = `
+                                                <span
+                                                    class="block"
+                                                    style="
+                                                        width:16px;
+                                                        height:16px;
+                                                        background:${color};
+                                                        border-radius:4px;
+                                                        border:1px solid rgba(0,0,0,0.15);
+                                                    ">
+                                                </span>
+                                                <span class="text-sm text-gray-800">${item.label}</span>
+                                            `;
                         }
 
-                        legendContainer.appendChild(el);
+                        row.appendChild(left);
+                        legendContainer.appendChild(row);
                     });
                 },
                 clickPolygonMaps() {
@@ -270,9 +330,20 @@
                         // Tangkap klik pada layer polygon
                         this.mapOffline.on("click", layerId, (e) => {
                             const feature = e.features?.[0];
-
+                            const props = feature.properties || {};
                             if (!feature) {
                                 console.warn("No feature clicked");
+                                return;
+                            }
+                            // ❌ 1. Disable click jika sudah dimiliki
+                            if (props.owned_by_me === true) {
+                                console.info("Polygon already owned, click disabled");
+                                return;
+                            }
+
+                            // ❌ 2. Safety guard: registered tapi bukan milik user
+                            if (props.is_registered === true && props.owned_by_me !== true) {
+                                console.info("Polygon owned by another user");
                                 return;
                             }
                             this.loading = true;
@@ -302,12 +373,11 @@
                                     units: "meters"
                                 }
                             );
-                           
+
                             // =====================================================
                             // 2️⃣ UPDATE WARNA POLYGON 
                             // =====================================================
                             // --- 1. Update warna polygon ---
-                            const newColor = "#ef4444"; // merah
                             const source = this.mapOffline.getSource(layerId);
                             const data = source._data;
                             // Reset semua polygon ke warna aslinya
@@ -320,7 +390,7 @@
                                 f.id == featureId
                             );
                             if (clicked) {
-                                clicked.properties.is_kolam = 1;
+                                clicked.properties.is_registered = true;
                             }
 
                             // Apply kembali ke source

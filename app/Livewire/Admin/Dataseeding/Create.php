@@ -9,7 +9,7 @@ use Masmerise\Toaster\Toaster;
 class Create extends Component
 {
     public $tanggal_penebaran, $data_kolam_id, $jenis_benih, $jumlah_ikan, $berat_rata_rata, $keterangan;
-    
+
     public function mount()
     {
         $this->tanggal_penebaran = '';
@@ -22,7 +22,7 @@ class Create extends Component
 
     public function getKolamsProperty()
     {
-        return Datakolam::all();
+        return DataKolam::forUser()->get();
     }
     public function store()
     {
@@ -55,7 +55,7 @@ class Create extends Component
         ]);
 
         Toaster::success('Data Seeding created!');
-        $this->reset(); 
+        $this->reset();
         $this->dispatch('seedingCreated');
     }
     public function render()

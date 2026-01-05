@@ -19,6 +19,22 @@ class DataSeeding extends Model
 
     public function kolam()
     {
-        return $this->belongsTo(DataKolam::class, 'data_kolam_id');
+        return $this->belongsTo(DataKolam::class, 'data_kolam_id')->forUser();
     }
+
+    public function scopeForUser($query, $user)
+    {
+        if ($user && !$user->isAdmin()) {
+            $query->whereHas(
+                'kolam',
+                fn($q) => $q->where('user_id', $user->id)
+            );
+        }
+    }
+
+    public function estimasi()
+    {
+        return $this->hasMany(DataEstimasiPanen::class, 'data_seeding_id', 'id');
+    }
+
 }

@@ -72,14 +72,19 @@ class Index extends Component
     }
     public function render()
     {
+
         $data = DataPanen::query()
-            ->whereHas('dataSeeding', function ($query) {
-                $query->where('jenis_benih', 'like', '%' . $this->search . '%');
+            ->with('dataSeeding')
+            ->whereHas('dataSeeding', fn($q) => $q->forUser(auth()->user()))
+            ->when($this->search, function ($q) {
+
+                $q->where('jenis_benih', 'like', '%' . $this->search . '%')
+                    ->orWhere('sgr', 'like', '%' . $this->search . '%')
+                    ->orWhere('target_weight', 'like', '%' . $this->search . '%')
+                    ->orWhere('estimated_days', 'like', '%' . $this->search . '%')
+                    ->orWhere('estimated_harvest_date', 'like', '%' . $this->search . '%');
             })
-            ->orWhere('sgr', 'like', '%' . $this->search . '%')
-            ->orWhere('target_weight', 'like', '%' . $this->search . '%')
-            ->orWhere('estimated_days', 'like', '%' . $this->search . '%')
-            ->orWhere('estimated_harvest_date', 'like', '%' . $this->search . '%')
+
             ->paginate($this->perPage);
         return view('livewire.admin.datapanen.index', compact('data'));
     }

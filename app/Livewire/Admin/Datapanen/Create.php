@@ -26,7 +26,7 @@ class Create extends Component
 
     public function getSeedingsProperty()
     {
-        return DataSeeding::all();
+        return DataSeeding::query()->forUser(auth()->user())->get();
     }
 
     public function setUpDdata()

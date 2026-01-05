@@ -23,18 +23,22 @@ class Update extends Component
     public $savedPolygons = [];
     public $offlineLayers = [];
     public bool $isReadySubmit = false;
-    public $selectIdKolam=[];
+    public $selectIdKolam = [];
+    public $ownerId = null;
 
     public function mount($id)
     {
 
         $this->selectIdKolam = $id;
+        $this->ownerId = auth()->user()->isAdmin() ? null : auth()->user()->id;
+        $this->user_id = $this->ownerId;
         $this->loadCurrentData();
         $this->dataUser = User::where('role', 'Pemilik Kolam')->get();
         $this->loadOfflineLayers();
     }
 
-    public function loadCurrentData(){
+    public function loadCurrentData()
+    {
         $this->selectedKolam = DataKolam::find($this->selectIdKolam);
         $this->nama_kolam = $this->selectedKolam->nama_kolam;
         $this->panjang = $this->selectedKolam->panjang;
@@ -49,35 +53,92 @@ class Update extends Component
         $this->isReadySubmit = true;
     }
 
+    // public function loadOfflineLayers()
+    // {
+    //     // Ambil semua feature_id kolam yang sudah disimpan
+    //     $kolams = DataKolam::select('feature_id','nama_kolam')->get()
+    //         ->keyBy('feature_id');
+
+    //     $kolamsId = $kolams->keys()->toArray();
+    //     $currentFeatureId = optional($this->selectedKolam)->feature_id;
+
+    //     $this->offlineLayers = MapLayer::with('features')->get()->map(function ($layer) use ($kolamsId, $currentFeatureId, $kolams) {
+    //         return [
+    //             'id' => $layer->layer_id,
+    //             'type' => $layer->layer_type,
+    //             'source_layer' => $layer->source_layer,
+
+    //             // Default paint, akan ditimpa oleh paint per-feature di frontend
+    //             'paint' => $layer->paint,
+
+    //             'data' => [
+    //                 'type' => 'FeatureCollection',
+    //                 'features' => $layer->features->map(function ($f) use ($kolamsId, $currentFeatureId, $kolams) {
+
+    //                     // Tentukan warna berdasarkan kondisi
+    //                     $color = '#3b82f6'; // Biru (default)
+    //                     if ($f->feature_id === $currentFeatureId) {
+    //                         $color = '#22c55e'; // Hijau
+    //                     } elseif (in_array($f->feature_id, $kolamsId)) {
+    //                         $color = '#ef4444'; // Merah
+    //                     }
+
+    //                     return [
+    //                         'type' => 'Feature',
+    //                         'id' => $f->feature_id,
+    //                         'geometry' => [
+    //                             'type' => $f->geometry_type,
+    //                             'coordinates' => json_decode($f->coordinates, true),
+    //                         ],
+    //                         'properties' => [
+    //                             ...json_decode($f->properties, true),
+    //                             'is_kolam' => in_array($f->feature_id, $kolamsId) ? 1 : 0,
+    //                             'color' => $color, // kirim warna ke Alpine
+    //                             'name' => $kolams[$f->feature_id]->nama_kolam ?? null,
+    //                         ],
+    //                     ];
+    //                 })
+    //             ]
+    //         ];
+    //     })->toArray();
+    // }
+
+
     public function loadOfflineLayers()
     {
-        // Ambil semua feature_id kolam yang sudah disimpan
-        $kolams = DataKolam::select('feature_id','nama_kolam')->get()
-            ->keyBy('feature_id');
+        $user = auth()->user();
+        $isAdmin = $user->isAdmin();
 
-        $kolamsId = $kolams->keys()->toArray();
         $currentFeatureId = optional($this->selectedKolam)->feature_id;
 
-        $this->offlineLayers = MapLayer::with('features')->get()->map(function ($layer) use ($kolamsId, $currentFeatureId, $kolams) {
-            return [
-                'id' => $layer->layer_id,
-                'type' => $layer->layer_type,
-                'source_layer' => $layer->source_layer,
+        // Semua kolam untuk mapping ownership
+        $allKolams = DataKolam::query()
+            ->select('feature_id', 'nama_kolam', 'user_id')
+            ->get()
+            ->keyBy('feature_id');
 
-                // Default paint, akan ditimpa oleh paint per-feature di frontend
-                'paint' => $layer->paint,
+        $this->offlineLayers = MapLayer::with('features')->get()
+            ->map(function ($layer) use ($allKolams, $user, $isAdmin, $currentFeatureId) {
 
-                'data' => [
-                    'type' => 'FeatureCollection',
-                    'features' => $layer->features->map(function ($f) use ($kolamsId, $currentFeatureId, $kolams) {
+                $features = $layer->features
+                    ->filter(function ($f) use ($allKolams, $user, $isAdmin) {
 
-                        // Tentukan warna berdasarkan kondisi
-                        $color = '#3b82f6'; // Biru (default)
-                        if ($f->feature_id === $currentFeatureId) {
-                            $color = '#22c55e'; // Hijau
-                        } elseif (in_array($f->feature_id, $kolamsId)) {
-                            $color = '#ef4444'; // Merah
+                        // Admin lihat semua
+                        if ($isAdmin) {
+                            return true;
                         }
+
+                        // Belum terdaftar → boleh tampil
+                        if (!$allKolams->has($f->feature_id)) {
+                            return true;
+                        }
+
+                        // Terdaftar → hanya milik user sendiri
+                        return $allKolams[$f->feature_id]->user_id === $user->id;
+                    })
+                    ->map(function ($f) use ($allKolams, $user, $currentFeatureId) {
+
+                        $kolam = $allKolams->get($f->feature_id);
 
                         return [
                             'type' => 'Feature',
@@ -88,18 +149,30 @@ class Update extends Component
                             ],
                             'properties' => [
                                 ...json_decode($f->properties, true),
-                                'is_kolam' => in_array($f->feature_id, $kolamsId) ? 1 : 0,
-                                'color' => $color, // kirim warna ke Alpine
-                                'name' => $kolams[$f->feature_id]->nama_kolam ?? null,
+
+                                // === STATE UI (SAMA DENGAN CREATE) ===
+                                'owned_by_me' => $kolam && $kolam->user_id === $user->id && $currentFeatureId != $f->feature_id,
+                                // 'is_registered' => (bool) $kolam && $currentFeatureId != $f->feature_id,
+                                'selected' => $currentFeatureId === $f->feature_id,
+                                'name' => $kolam?->nama_kolam,
                             ],
                         ];
-                    })
-                ]
-            ];
-        })->toArray();
+                    });
+
+                return [
+                    'id' => $layer->layer_id,
+                    'type' => $layer->layer_type,
+                    'paint' => $layer->paint,
+                    'source_layer' => $layer->source_layer,
+                    'data' => [
+                        'type' => 'FeatureCollection',
+                        'features' => $features->values(),
+                    ],
+                ];
+            })
+            ->values()
+            ->toArray();
     }
-
-
 
     public function loadSavedPolygons()
     {

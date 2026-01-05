@@ -15,7 +15,7 @@ Route::get('/', function () {
 
 Route::get('peta-zonasi', function () {
     return view('peta-zonasi');
-});
+})->name('peta-zonasi');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

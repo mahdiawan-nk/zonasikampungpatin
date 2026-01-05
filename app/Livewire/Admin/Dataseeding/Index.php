@@ -8,6 +8,8 @@ use Livewire\WithPagination;
 use Livewire\WithoutUrlPagination;
 use Livewire\Attributes\On;
 use Masmerise\Toaster\Toaster;
+use Symfony\Component\VarDumper\Cloner\Data;
+
 class Index extends Component
 {
     use WithPagination, WithoutUrlPagination;
@@ -70,8 +72,10 @@ class Index extends Component
     }
     public function render()
     {
+        // dd(DataSeeding::query()->with('kolam')->whereHas('kolam', fn($q) => $q->forUser())->get());
         $data = DataSeeding::query()
             ->with('kolam')
+            ->whereHas('kolam', fn($q) => $q->forUser())
             ->paginate($this->perPage);
         return view('livewire.admin.dataseeding.index', compact('data'));
     }

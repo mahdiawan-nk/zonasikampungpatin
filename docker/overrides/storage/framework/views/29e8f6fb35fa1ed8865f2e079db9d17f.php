@@ -54,14 +54,14 @@
                         <td class="px-4 py-3">
                             <?php if (isset($component)) { $__componentOriginalc04b147acd0e65cc1a77f86fb0e81580 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalc04b147acd0e65cc1a77f86fb0e81580 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'e60dd9d2c3a62d619c9acb38f20d5aa5::button.index','data' => ['variant' => 'ghost','square' => true,'href' => ''.e(route('kolam.update', ['id' => $item->id])).'','wire:navigate' => true]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'e60dd9d2c3a62d619c9acb38f20d5aa5::button.index','data' => ['variant' => 'ghost','square' => true,'wire:click' => 'openUpdate('.e($item->id).')','wire:navigate' => true]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('flux::button'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['variant' => 'ghost','square' => true,'href' => ''.e(route('kolam.update', ['id' => $item->id])).'','wire:navigate' => true]); ?>
+<?php $component->withAttributes(['variant' => 'ghost','square' => true,'wire:click' => 'openUpdate('.e($item->id).')','wire:navigate' => true]); ?>
                                 <?php if (isset($component)) { $__componentOriginal736a3246944d2d8ec1919ce8cba6f0a6 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal736a3246944d2d8ec1919ce8cba6f0a6 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'e60dd9d2c3a62d619c9acb38f20d5aa5::icon.pencil-square','data' => ['class' => 'text-blue-500 w-5 h-5']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -198,7 +198,22 @@ if (isset($__slots)) unset($__slots);
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes(['wire:show' => 'showUpdate','name' => 'update-panen','class' => 'md:w-1/2']); ?>
-        
+        <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('admin.datapanen.update', ['panenId' => $selectedId]);
+
+$__html = app('livewire')->mount($__name, $__params, 'update-form-'.e($selectedId).'', $__slots ?? [], get_defined_vars());
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
      <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal8cc9d3143946b992b324617832699c5f)): ?>

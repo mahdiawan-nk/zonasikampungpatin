@@ -7,4 +7,4 @@ Livewire.start();
 window.Livewire = Livewire;
 window.Alpine = Alpine;
 
-Alpine.start();
+// Alpine.start();

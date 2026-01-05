@@ -6,17 +6,23 @@ use Livewire\Component;
 
 use App\Models\DataKolam;
 use App\Models\MapLayer;
+use App\Models\MapFeature;
+use Livewire\Attributes\On;
 
 class Petazonasi extends Component
 {
 
     public $offlineLayers = [];
+    public $previewKolam;
+
+    public $showPreview = false;
 
     public function mount()
     {
         $this->loadOfflineLayers();
     }
 
+   
     public function loadOfflineLayers()
     {
         // Ambil semua feature_id kolam yang sudah disimpan
@@ -51,6 +57,57 @@ class Petazonasi extends Component
             ];
         })->toArray();
     }
+    #[On('viewDataKolam')]
+    public function previewData($feature_id, $polygon = null, $clickpoint = null)
+    {
+        $this->showPreview = true;
+        $data = DataKolam::query()
+            ->select([
+                'id',
+                'nama_kolam',
+                'panjang',
+                'lebar',
+                'kapasitas',
+                'status',
+                'user_id',
+                'feature_id',
+            ])
+            ->with([
+                'user:id,name',
+                'seedings:id,data_kolam_id,tanggal_penebaran,jenis_benih,jumlah_ikan',
+                'seedings.estimasi:id,data_seeding_id,sgr,target_weight,estimated_days,estimated_harvest_date',
+            ])
+            ->where('feature_id', $feature_id)
+            ->first();
+
+        if ($data) {
+            $this->previewKolam = [
+                'nama' => $data->nama_kolam,
+                'panjang' => $data->panjang,
+                'lebar' => $data->lebar,
+                'kapasitas' => $data->kapasitas,
+                'status' => $data->status,
+                'user' => $data->user?->name,
+                'seedings' => $data->seedings->map(fn($s) => [
+                    'tanggal' => $s->tanggal_penebaran,
+                    'jenis' => $s->jenis_benih,
+                    'jumlah' => $s->jumlah_ikan,
+                    'estimasi' => $s->estimasi->map(fn($e) => [
+                        'sgr' => $e->sgr,
+                        'target' => $e->target_weight,
+                        'hari' => $e->estimated_days,
+                        'tanggal' => $e->estimated_harvest_date,
+                    ]),
+                ])->values(),
+            ];
+        } else {
+            $this->previewKolam = null;
+        }
+
+        $this->dispatch('loadingHide', $this->previewKolam);
+
+    }
+
     public function render()
     {
         return view('livewire.website.petazonasi');

@@ -41,11 +41,11 @@
                         <td class="px-4 py-3">
                             {{ ($data->currentPage() - 1) * $data->perPage() + $index + 1 }}
                         </td>
-                        <td class="px-4 py-3">{{ $item->tanggal_penebaran }}</td>
-                        <td class="px-4 py-3">{{ $item->kolam->nama_kolam }}</td>
-                        <td class="px-4 py-3">{{ $item->jenis_benih }}</td>
-                        <td class="px-4 py-3">{{ $item->jumlah_ikan }}</td> 
-                        <td class="px-4 py-3">{{ $item->berat_rata_rata }}</td>
+                        <td class="px-4 py-3">{{ $item?->tanggal_penebaran }}</td>
+                        <td class="px-4 py-3">{{ $item?->kolam?->nama_kolam }}</td>
+                        <td class="px-4 py-3">{{ $item?->jenis_benih }}</td>
+                        <td class="px-4 py-3">{{ $item?->jumlah_ikan }}</td> 
+                        <td class="px-4 py-3">{{ $item?->berat_rata_rata }}</td>
 
                         <td class="px-4 py-3">
                             <flux:button variant="ghost" square wire:click="openUpdate({{ $item->id }})">

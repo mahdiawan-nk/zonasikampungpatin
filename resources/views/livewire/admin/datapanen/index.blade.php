@@ -51,7 +51,7 @@
                         <td class="px-4 py-3">{{ $item->estimated_harvest_date }}</td>
 
                         <td class="px-4 py-3">
-                            <flux:button variant="ghost" square href="{{ route('kolam.update', ['id' => $item->id]) }}"
+                            <flux:button variant="ghost" square wire:click="openUpdate({{ $item->id }})"
                                 wire:navigate>
                                 <flux:icon.pencil-square class="text-blue-500 w-5 h-5" />
                             </flux:button>
@@ -81,7 +81,7 @@
     </flux:modal>
     {{-- @if ($showUpdate) --}}
     <flux:modal wire:show="showUpdate" name="update-panen" class="md:w-1/2">
-        {{-- <livewire:admin.datapanen.update wire:key="update-form-{{ $selectedId }}" :panenId="$selectedId" /> --}}
+        <livewire:admin.datapanen.update wire:key="update-form-{{ $selectedId }}" :panenId="$selectedId" />
     </flux:modal>
     <flux:modal name="delete-panen" class="min-w-[22rem]">
         <div class="space-y-6">

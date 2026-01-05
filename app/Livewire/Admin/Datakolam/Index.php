@@ -18,6 +18,13 @@ class Index extends Component
     public $showUpdate = false;
     public $selectedId;
 
+    public $ownerId = null;
+
+    public function mount()
+    {
+        $this->ownerId = auth()->user()->isAdmin() ? null : auth()->user()->id;
+    }
+
     public function openCreate()
     {
         $this->reset('selectedId');
@@ -74,7 +81,10 @@ class Index extends Component
             ->when($this->search, function ($q) {
                 $q->where('nama_kolam', 'like', '%' . $this->search . '%');
             })
+            ->when($this->ownerId, function ($q) {
+                $q->where('user_id', $this->ownerId);
+            })
             ->paginate($this->perPage);
-        return view('livewire.admin.datakolam.index',compact('data'));
+        return view('livewire.admin.datakolam.index', compact('data'));
     }
 }
