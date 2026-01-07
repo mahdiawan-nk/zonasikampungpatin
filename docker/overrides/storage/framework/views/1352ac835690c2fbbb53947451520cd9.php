@@ -38,7 +38,7 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars, $__key, $__value); ?>
 
-<div class="space-y-3">
+<div class="space-y-4 bg-white p-6 rounded-xl shadow-md dark:bg-gray-800 dark:text-gray-200 transition-colors">
 
     
     <div class="flex items-center justify-between">
@@ -46,15 +46,16 @@ unset($__defined_vars, $__key, $__value); ?>
     </div>
 
     
-    <div class="overflow-hidden border border-gray-200 rounded-xl bg-white shadow-sm">
+    <div
+        class="overflow-hidden border border-gray-200 rounded-xl shadow-sm dark:border-gray-700 dark:bg-gray-800 transition-colors">
         <div class="overflow-x-auto">
-            <table class="min-w-full text-sm text-gray-700">
+            <table class="min-w-full text-sm text-gray-700 dark:text-gray-300">
 
                 
-                <thead class="bg-gray-100 text-gray-600">
+                <thead class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-200">
                     <tr>
                         <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $headers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $header): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <th class="px-4 py-3 font-semibold uppercase text-xs tracking-wide">
+                            <th class="px-4 py-3 font-semibold uppercase text-xs tracking-wide text-left">
                                 <?php echo e($header); ?>
 
                             </th>
@@ -63,22 +64,21 @@ unset($__defined_vars, $__key, $__value); ?>
                 </thead>
 
                 
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                     <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                        <tr class="hover:bg-gray-50 transition-colors">
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                             <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $fields; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3 whitespace-nowrap">
                                     <?php echo e(data_get($row, $field)); ?>
 
                                 </td>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                         </tr>
-
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="<?php echo e(count($headers)); ?>" class="px-6 py-10 text-center">
-                                <div class="flex flex-col items-center text-gray-400">
-                                    <svg class="w-10 h-10 mb-2 opacity-60" fill="none" stroke="currentColor"
+                                <div class="flex flex-col items-center text-gray-400 dark:text-gray-500">
+                                    <svg class="w-12 h-12 mb-3 opacity-60" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                             d="M20 12H4m9 8l-8-8 8-8" />

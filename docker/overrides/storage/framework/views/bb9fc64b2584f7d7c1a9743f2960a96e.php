@@ -1,7 +1,7 @@
 <?php $attributes ??= new \Illuminate\View\ComponentAttributeBag;
 
 $__newAttributes = [];
-$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames((['label', 'value', 'icon' => null, 'color' => 'blue','sizeIcon'=>null]));
+$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames((['label', 'value', 'icon' => null, 'color' => 'blue', 'sizeIcon' => 6]));
 
 foreach ($attributes->all() as $__key => $__value) {
     if (in_array($__key, $__propNames)) {
@@ -16,7 +16,7 @@ $attributes = new \Illuminate\View\ComponentAttributeBag($__newAttributes);
 unset($__propNames);
 unset($__newAttributes);
 
-foreach (array_filter((['label', 'value', 'icon' => null, 'color' => 'blue','sizeIcon'=>null]), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
+foreach (array_filter((['label', 'value', 'icon' => null, 'color' => 'blue', 'sizeIcon' => 6]), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
     $$__key = $$__key ?? $__value;
 }
 
@@ -28,16 +28,30 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars, $__key, $__value); ?>
 
-<div class="p-4 bg-white shadow-sm rounded-xl border border-gray-100">
+<div
+    class="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm transition-colors hover:shadow-md">
     <div class="flex items-center justify-between">
 
+        
         <div>
-            <p class="text-gray-500 text-sm"><?php echo e($label); ?></p>
-            <h3 class="text-2xl font-bold text-gray-800 mt-1"><?php echo e($value); ?></h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm"><?php echo e($label); ?></p>
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mt-1"><?php echo e($value); ?></h3>
         </div>
 
-        <div class="p-3 rounded-lg bg-<?php echo e($color); ?>-100 text-<?php echo e($color); ?>-600">
-            <?php if($icon): ?>
+        
+        <!--[if BLOCK]><![endif]--><?php if($icon): ?>
+            <div class="<?php echo \Illuminate\Support\Arr::toCssClasses([
+                'p-3 rounded-lg',
+                'bg-' .
+                $color .
+                '-100 text-' .
+                $color .
+                '-600 dark:bg-' .
+                $color .
+                '-600 dark:text-' .
+                $color .
+                '-100',
+            ]); ?>">
                 <?php if (isset($component)) { $__componentOriginal511d4862ff04963c3c16115c05a86a9d = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal511d4862ff04963c3c16115c05a86a9d = $attributes; } ?>
 <?php $component = Illuminate\View\DynamicComponent::resolve(['component' => $icon] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -47,7 +61,7 @@ unset($__defined_vars, $__key, $__value); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\DynamicComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['class' => 'size-'.e($sizeIcon ?? '16').'']); ?>
+<?php $component->withAttributes(['class' => 'w-'.e($sizeIcon).' h-'.e($sizeIcon).' text-blue-600 dark:text-gray-800']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal511d4862ff04963c3c16115c05a86a9d)): ?>
@@ -58,8 +72,8 @@ unset($__defined_vars, $__key, $__value); ?>
 <?php $component = $__componentOriginal511d4862ff04963c3c16115c05a86a9d; ?>
 <?php unset($__componentOriginal511d4862ff04963c3c16115c05a86a9d); ?>
 <?php endif; ?>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
     </div>
 </div>

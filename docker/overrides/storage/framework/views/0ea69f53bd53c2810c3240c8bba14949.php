@@ -7,9 +7,10 @@
                 <span class="self-center text-xl text-heading font-semibold whitespace-nowrap"><?php echo e($brandTitle); ?></span>
             </a>
             <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-                <button type="button"
-                    class="text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none">Get
-                    started</button>
+                <a href="<?php echo e(route('login')); ?>" wire:navigate
+                    class="text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-sm text-sm px-2 py-1 focus:outline-none">Login</a>
+                <a href="<?php echo e(route('register')); ?>" wire:navigate
+                    class="text-white bg-default hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-sm text-sm px-2 py-1 mx-2 focus:outline-none">Daftar</a>
                 <button data-collapse-toggle="navbar-sticky" type="button"
                     class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-body rounded-base md:hidden hover:bg-neutral-secondary-soft hover:text-heading focus:outline-none focus:ring-2 focus:ring-neutral-tertiary"
                     aria-controls="navbar-sticky" aria-expanded="false">
