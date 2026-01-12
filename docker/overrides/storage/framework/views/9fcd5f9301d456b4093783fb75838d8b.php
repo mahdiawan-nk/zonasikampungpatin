@@ -31,81 +31,102 @@ foreach ($attributes->all() as $__key => $__value) {
 }
 
 unset($__defined_vars, $__key, $__value); ?>
-<?php
-    use Illuminate\Support\Carbon;
-    $today = Carbon::today();
 
+<?php
     $colors = [
         'H-14' => 'blue',
-        'H-7' => 'red',
-        'H-3' => 'green',
+        'H-7' => 'amber',
+        'H-3' => 'rose',
     ];
 ?>
 
-<div class="bg-white shadow-sm p-7 dark:bg-gray-800">
-    <div class="block mb-7">
-        <h5 class="text-xl font-bold leading-none tracking-tight text-neutral-900 dark:text-white">Higlight Panen Yang
-            Akan Datang</h5>
+<div class="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-6">
+    <!-- Header -->
+    <div class="mb-6">
+        <h3 class="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+            Highlight Panen Mendatang
+        </h3>
+        <p class="text-sm text-neutral-500 dark:text-neutral-400">
+            Estimasi panen berdasarkan tanggal tebar
+        </p>
     </div>
-    <?php $__currentLoopData = $estimasi; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $items): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-        <!--[if BLOCK]><![endif]--><?php if($items->count() > 0): ?>
-            <div class="space-y-4 mb-6">
-                <!--[if BLOCK]><![endif]--><?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $data): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                    <?php
-                        $color = $colors[$key] ?? 'gray';
-                    ?>
 
-                    <div
-                        class="p-4 rounded-xl shadow-sm border transition-colors
-                    bg-<?php echo e($color); ?>-50 dark:bg-<?php echo e($color); ?>-700 border-<?php echo e($color); ?>-800 dark:border-<?php echo e($color); ?>-600">
+    <!-- Content -->
+    <div class="space-y-6">
+        <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $estimasi; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $items): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <!--[if BLOCK]><![endif]--><?php if($items->count()): ?>
+                <div class="space-y-3">
+                    <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $data): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php $color = $colors[$key] ?? 'neutral'; ?>
 
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-gray-500 dark:text-white text-sm">
-                                    Seeding: <?php echo e($data->dataSeeding->jenis_benih ?? 'N/A'); ?>
+                        <div
+                            class="rounded-lg border border-neutral-200 dark:border-neutral-700
+                                   bg-neutral-50 dark:bg-neutral-800 p-4">
 
-                                </p>
-                                <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mt-1">
-                                    Target: <?php echo e($data->target_weight); ?> kg
-                                </h3>
-                                <p class="text-gray-500 dark:text-gray-300 text-sm mt-1">
-                                    Est. Panen:
-                                    <?php echo e(\Carbon\Carbon::parse($data->estimated_harvest_date)->format('d M Y')); ?>
+                            <div class="flex items-start justify-between gap-4">
+                                <!-- Left -->
+                                <div class="space-y-1">
+                                    <p class="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                                        <?php echo e($data->jenis_benih ?? 'Seeding'); ?>
 
-                                </p>
+                                    </p>
+
+                                    <h4 class="text-base font-medium text-neutral-900 dark:text-neutral-100">
+                                        Target <?php echo e($data->target_weight ?? '-'); ?> kg
+                                    </h4>
+
+                                    <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                                        Est. Panen:
+                                        <span class="font-medium text-neutral-700 dark:text-neutral-200">
+                                            <?php echo e($data->estimated_harvest_date?->format('d M Y') ?? '-'); ?>
+
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <!-- Badge -->
+                                <span
+                                    class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium
+                                           bg-<?php echo e($color); ?>-100 text-<?php echo e($color); ?>-700
+                                           dark:bg-<?php echo e($color); ?>-900/40 dark:text-<?php echo e($color); ?>-300">
+                                    <?php echo e($key); ?>
+
+                                </span>
                             </div>
 
-                            <span
-                                class="inline-block px-3 py-1 text-xs font-semibold rounded-full
-                        bg-<?php echo e($color); ?>-500 text-white">
-                                <?php echo e($key); ?>
+                            <!--[if BLOCK]><![endif]--><?php if($data->keterangan): ?>
+                                <p class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+                                    <?php echo e($data->keterangan); ?>
 
-                            </span>
+                                </p>
+                            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                         </div>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+                </div>
+            <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
 
-                        <!--[if BLOCK]><![endif]--><?php if($data->notes): ?>
-                            <p class="text-gray-400 dark:text-gray-300 text-sm mt-2"><?php echo e($data->notes); ?></p>
-                        <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-                    </div>
-
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                    <p class="text-gray-400 dark:text-gray-500 text-center py-6">Tidak ada data <?php echo e($key); ?></p>
-                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-            </div>
-        <?php else: ?>
+        <!--[if BLOCK]><![endif]--><?php if(collect($estimasi)->flatten()->isEmpty()): ?>
+            <!-- Empty State -->
             <div
-                class="relative w-full rounded-lg border border-transparent bg-blue-50 p-4 [&>svg]:absolute [&>svg]:text-foreground [&>svg]:left-4 [&>svg]:top-4 [&>svg+div]:translate-y-[-3px] [&:has(svg)]:pl-11 text-blue-600">
-                <svg class="w-5 h-5 -translate-y-0.5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                class="flex items-start gap-3 rounded-lg border border-dashed border-neutral-300
+                       dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 p-4">
+                <svg class="w-5 h-5 text-neutral-400 dark:text-neutral-500" xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                        d="M12 9v3.75m0 3.75h.008M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <h5 class="mb-1 font-medium leading-none tracking-tight">Informasi</h5>
-                <div class="text-sm opacity-80">Belum Ada Panen Yang Akan Datang</div>
-            </div>
-            <?php break; ?>
 
+                <div>
+                    <p class="font-medium text-neutral-700 dark:text-neutral-200">
+                        Belum ada panen mendatang
+                    </p>
+                    <p class="text-sm text-neutral-500 dark:text-neutral-400">
+                        Data estimasi panen akan muncul otomatis sesuai jadwal
+                    </p>
+                </div>
+            </div>
         <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
-    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
+    </div>
 </div>
 <?php /**PATH /var/www/html/resources/views/components/widgets/higligth-list.blade.php ENDPATH**/ ?>

@@ -30,9 +30,9 @@
                 <flux:navlist.item icon="cube" :href="route('seeding.index')"
                     :current="request()->routeIs('seeding.index')" wire:navigate>{{ __('Data Tebar Benih') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="cube" :href="route('panen.index')"
+                {{-- <flux:navlist.item icon="cube" :href="route('panen.index')"
                     :current="request()->routeIs('panen.index')" wire:navigate>{{ __('Data Jadwal Panen') }}
-                </flux:navlist.item>
+                </flux:navlist.item> --}}
                 {{-- <flux:navlist.item icon="map" :href="route('pemetaan.index')"
                     :current="request()->routeIs('pemetaan.index')" wire:navigate>{{ __('Pemetaan') }}
                 </flux:navlist.item> --}}

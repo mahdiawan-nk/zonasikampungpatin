@@ -26,11 +26,11 @@
             <thead class="bg-gray-100">
                 <tr>
                     <th class="px-4 py-3 font-medium text-gray-700">No</th>
-                    <th class="px-4 py-3 font-medium text-gray-700">Tanggal Tebar</th>
                     <th class="px-4 py-3 font-medium text-gray-700">Kolam</th>
+                    <th class="px-4 py-3 font-medium text-gray-700">Tanggal Tebar</th>
                     <th class="px-4 py-3 font-medium text-gray-700">Jenis Benih</th>
                     <th class="px-4 py-3 font-medium text-gray-700">Jumlah</th>
-                    <th class="px-4 py-3 font-medium text-gray-700">Berat Rata Rata</th>
+                    <th class="px-4 py-3 font-medium text-gray-700">Estimasi Panen</th>
                     <th class="px-4 py-3 font-medium text-gray-700">Aksi</th>
                 </tr>
             </thead>
@@ -42,11 +42,35 @@
                             <?php echo e(($data->currentPage() - 1) * $data->perPage() + $index + 1); ?>
 
                         </td>
-                        <td class="px-4 py-3"><?php echo e($item?->tanggal_penebaran); ?></td>
                         <td class="px-4 py-3"><?php echo e($item?->kolam?->nama_kolam); ?></td>
+                        <td class="px-4 py-3"><?php echo e(\Carbon\Carbon::parse($item?->tanggal_penebaran)->format('d-m-Y')); ?></td>
                         <td class="px-4 py-3"><?php echo e($item?->jenis_benih); ?></td>
-                        <td class="px-4 py-3"><?php echo e($item?->jumlah_ikan); ?></td> 
-                        <td class="px-4 py-3"><?php echo e($item?->berat_rata_rata); ?></td>
+                        <td class="px-4 py-3"><?php echo e($item?->jumlah_ikan); ?></td>
+                        <td class="px-4 py-3 w-65">
+                            <div class="space-y-1 text-sm">
+                                <div class="flex justify-between gap-2">
+                                    <span class="text-neutral-600 dark:text-neutral-400">
+                                        Lama Hari
+                                    </span>
+                                    <span class="font-medium text-neutral-900 dark:text-neutral-100">
+                                        <?php echo e($item->estimated_days ? $item->estimated_days . ' H' : '-'); ?>
+
+                                    </span>
+                                </div>
+
+                                <div class="flex justify-between gap-2">
+                                    <span class="text-neutral-600 dark:text-neutral-400">
+                                        Tanggal Panen
+                                    </span>
+                                    <span class="font-medium text-neutral-900 dark:text-neutral-100">
+                                        <?php echo e($item->estimated_harvest_date?->format('d-m-Y') ?? '-'); ?>
+
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+
+
 
                         <td class="px-4 py-3">
                             <?php if (isset($component)) { $__componentOriginalc04b147acd0e65cc1a77f86fb0e81580 = $component; } ?>

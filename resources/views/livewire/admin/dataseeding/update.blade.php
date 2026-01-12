@@ -4,7 +4,7 @@
     </div>
     <flux:field>
         <flux:label>Kolam</flux:label>
-        <flux:select wire:model="data_kolam_id" placeholder="Choose a kolam">
+        <flux:select wire:model="data_kolam_id" placeholder="Choose a kolam" disabled>
             @foreach ($this->getKolamsProperty() as $kolam)
                 <flux:select.option value="{{ $kolam->id }}">{{ $kolam->nama_kolam }}</flux:select.option>
             @endforeach
@@ -29,8 +29,18 @@
     </flux:field>
     <flux:field>
         <flux:label>Berat Rata Rata (gram)</flux:label>
-        <flux:input wire:model="berat_rata_rata" type="number" placeholder="Masukkan berat rata rata ikan" />
+        <flux:input wire:model="berat_rata_rata" type="text" placeholder="Masukkan berat rata rata ikan" />
         <flux:error name="berat_rata_rata" />
+    </flux:field>
+    <flux:field>
+        <flux:label>Estimasi Hari</flux:label>
+        <flux:input wire:model.live.debounce.350ms="estimated_days" type="number" placeholder="Masukkan estimasi hari" />
+        <flux:error name="estimated_days" />
+    </flux:field>
+    <flux:field>
+        <flux:label>Estimasi Tanggal Panen</flux:label>
+        <flux:input wire:model="estimated_harvest_date" type="date" readonly/>
+        <flux:error name="estimated_harvest_date" />
     </flux:field>
 
     <flux:field>

@@ -12,14 +12,32 @@
         <section class="mt-25" x-data="petaOfflineComponent()">
             <div id="legend" class="absolute top-18 left-4 bg-white shadow-lg rounded-sm p-2 z-50 text-sm">
                 <h3 class="font-semibold mb-2 dark:text-slate-900">Legenda</h3>
-                <div id="legend-items"></div>
+                
+                <div class="mt-3 border-t pt-3 text-xs text-gray-600">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-6 h-1 bg-red-500"></span> Batas Desa
+                    </div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-6 h-1 bg-[#8007b0]"></span> Batas Dusun
+                    </div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-6 h-4 bg-red-500"></span> Sudah Terdata
+                    </div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-6 h-4 bg-[#bfe81a]"></span> Akan Panen H-3
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-4 bg-[#45e9f2]"></span> Belum Terdata
+                    </div>
+                </div>
             </div>
 
 
-            <div x-cloak x-show="modalIsOpen" x-trap.inert.noscroll="modalIsOpen" x-on:keydown.esc.window="modalIsOpen = true"
-                class="fixed inset-0 z-40 flex" role="dialog" aria-modal="true" aria-labelledby="slideoverTitle">
+            <div x-cloak x-show="modalIsOpen" x-trap.inert.noscroll="modalIsOpen"
+                x-on:keydown.esc.window="modalIsOpen = false" class="fixed inset-0 z-40 flex" role="dialog"
+                aria-modal="true" aria-labelledby="slideoverTitle">
                 <!-- Backdrop -->
-                <div x-show="modalIsOpen" x-transition.opacity.duration.200ms x-on:click="modalIsOpen = true"
+                <div x-show="modalIsOpen" x-transition.opacity.duration.200ms x-on:click="modalIsOpen = false"
                     class="fixed inset-0 bg-black/30 backdrop-blur-sm"></div>
 
                 <!-- SlideOver Panel -->
@@ -120,12 +138,12 @@
 
                                     <!-- Seeding Item -->
                                     <div class="divide-y dark:divide-neutral-700">
-                                        <template x-for="seeding in previewData.seedings">
+                                        <template x-if="previewData.seeding">
                                             <div class="space-y-3 px-4 py-4">
                                                 <div class="flex justify-between">
                                                     <span class="text-neutral-500">Tanggal Tebar</span>
                                                     <span class="font-medium text-neutral-900 dark:text-white"
-                                                        x-text="seeding.tanggal">
+                                                        x-text="previewData.seeding.tanggal">
                                                         12 Januari 2025
                                                     </span>
                                                 </div>
@@ -133,7 +151,7 @@
                                                 <div class="flex justify-between">
                                                     <span class="text-neutral-500">Jenis Benih</span>
                                                     <span class="font-medium text-neutral-900 dark:text-white"
-                                                        x-text="seeding.jenis">
+                                                        x-text="previewData.seeding.jenis">
                                                         Patin Siam
                                                     </span>
                                                 </div>
@@ -141,56 +159,25 @@
                                                 <div class="flex justify-between">
                                                     <span class="text-neutral-500">Jumlah Ikan</span>
                                                     <span class="font-medium text-neutral-900 dark:text-white"
-                                                        x-text="seeding.jumlah">
+                                                        x-text="previewData.seeding.jumlah">
                                                         8.000 ekor
                                                     </span>
                                                 </div>
 
-                                                <!-- ========================= -->
-                                                <!-- 3️⃣ ESTIMASI PANEN -->
-                                                <!-- ========================= -->
-                                                <template x-for="estimasi in seeding.estimasi">
-                                                    <div class="rounded-md bg-neutral-100 p-3 dark:bg-neutral-800">
-                                                        <p
-                                                            class="mb-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                                                            Estimasi Panen
-                                                        </p>
-
-                                                        <div class="grid grid-cols-2 gap-3 text-xs">
-                                                            <div>
-                                                                <p class="text-neutral-500">SGR</p>
-                                                                <p class="font-semibold text-neutral-900 dark:text-white"
-                                                                    x-text="estimasi.sgr">
-                                                                    0.02
-                                                                </p>
-                                                            </div>
-
-                                                            <div>
-                                                                <p class="text-neutral-500">Target Berat</p>
-                                                                <p class="font-semibold text-neutral-900 dark:text-white"
-                                                                    x-text="estimasi.target + ' gr'">
-                                                                    500 gr
-                                                                </p>
-                                                            </div>
-
-                                                            <div>
-                                                                <p class="text-neutral-500">Estimasi Hari</p>
-                                                                <p class="font-semibold text-neutral-900 dark:text-white"
-                                                                    x-text="estimasi.hari + ' hari'">
-                                                                    120 hari
-                                                                </p>
-                                                            </div>
-
-                                                            <div>
-                                                                <p class="text-neutral-500">Tanggal Panen</p>
-                                                                <p class="font-semibold text-neutral-900 dark:text-white"
-                                                                    x-text="estimasi.tanggal">
-                                                                    11 Mei 2025
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </template>
+                                                <div class="flex justify-between">
+                                                    <span class="text-neutral-500">Estimasi Hari Panen</span>
+                                                    <span class="font-medium text-neutral-900 dark:text-white"
+                                                        x-text="previewData.seeding.estimasi_day">
+                                                        8.000 ekor
+                                                    </span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-neutral-500">Estimasi Tanggal Panen</span>
+                                                    <span class="font-medium text-neutral-900 dark:text-white"
+                                                        x-text="previewData.seeding.estimasi">
+                                                        8.000 ekor
+                                                    </span>
+                                                </div>
                                             </div>
                                         </template>
 
@@ -268,6 +255,7 @@
                 previewData: null,
                 init() {
                     Livewire.on('loadingHide', (data) => {
+                        document.getElementById('map').inert = false;
                         this.modalIsOpen = true
                         this.loading = false
                         this.previewData = data[0] ?? null
@@ -314,7 +302,7 @@
                     }
                     this.mapOffline.on('load', () => {
                         this.renderOfflineLayers();
-                        this.renderLegendMap();
+                        // this.renderLegendMap();
                         this.clickPolygonMaps();
                     });
                 },
@@ -333,7 +321,26 @@
                             id: layer.id,
                             type: layer.type,
                             source: layer.id,
-                            paint: JSON.parse(layer.paint)
+                            paint: {
+                                ...JSON.parse(layer.paint),
+                                'fill-color': [
+                                    'case',
+
+                                    // 🔥 Panen H-3 (urgent)
+                                    ['all',
+                                        ['==', ['get', 'will_harvest_3_days'], true],
+                                        ['==', ['get', 'isSaved'], true]
+                                    ],
+                                    '#bfe81a',
+
+                                    // 🟥 Kolam tersimpan biasa
+                                    ['==', ['get', 'isSaved'], true],
+                                    '#ff0000',
+
+                                    // 🔵 Default
+                                    '#45e9f2'
+                                ],
+                            }
                         });
                         // ===========================================
                         // 1️⃣ BUAT CENTROID FEATURE UNTUK TEXT LABEL
@@ -344,7 +351,7 @@
                                 type: "Feature",
                                 geometry: center.geometry,
                                 properties: {
-                                    label: f.properties?.name ?? f.properties?.feature_id ??
+                                    label: f.properties?.name ??
                                         "", // pilih label dari properties
                                 }
                             };
@@ -425,6 +432,105 @@
                         legendContainer.appendChild(el);
                     })
                 },
+                showPolygonPopup(feature, lngLat) {
+                    const props = feature.properties;
+                    const popupContent = `
+                        <div class="rounded-lg bg-white dark:bg-neutral-900 p-4 text-sm
+                                    text-neutral-800 dark:text-neutral-100 shadow-md min-w-[240px]">
+
+                            <!-- Header -->
+                            <h4 class="text-base font-semibold text-neutral-900 dark:text-neutral-100 mb-3">
+                                ${props.name ?? 'Kolam'}
+                            </h4>
+
+                            <!-- Info -->
+                            <div class="space-y-1">
+                                <div class="flex justify-between">
+                                    <span class="text-neutral-500 dark:text-neutral-400">Kapasitas</span>
+                                    <span class="font-medium">
+                                        ${props.kapasitas ?? '-'}
+                                    </span>
+                                </div>
+
+                                <div class="flex justify-between">
+                                    <span class="text-neutral-500 dark:text-neutral-400">Pemilik</span>
+                                    <span class="font-medium">
+                                        ${props.pemilik ?? '-'}
+                                    </span>
+                                </div>
+
+                                <div class="flex justify-between">
+                                    <span class="text-neutral-500 dark:text-neutral-400">Status</span>
+                                    <span class="font-medium ${props.isSaved
+                                        ? 'text-emerald-600 dark:text-emerald-400'
+                                        : 'text-neutral-500 dark:text-neutral-400'}">
+                                        ${props.isSaved ? 'Tersimpan' : 'Belum Disimpan'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Alert -->
+                            ${props.will_harvest_3_days ? `
+                                                    <div class="mt-3 rounded-md border border-amber-200 dark:border-amber-800
+                                                                bg-amber-50 dark:bg-amber-900/30
+                                                                px-3 py-2 text-xs font-medium text-amber-700 dark:text-amber-300">
+                                                        ⚠️ Panen dalam 3 hari
+                                                    </div>
+                                                ` : ''}
+
+                            <!-- Action -->
+                            <div class="mt-4" x-show="${props.isSaved}">
+                                <button
+                                    x-on:click="showDetail('${props.feature_id}')"
+                                    class="inline-flex w-full items-center justify-center rounded-md
+                                        bg-blue-600 hover:bg-blue-700
+                                        text-white text-xs font-medium py-2 transition
+                                        dark:bg-blue-500 dark:hover:bg-blue-600">
+                                    Lihat Detail
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+
+
+                    new mapboxgl.Popup({
+                            closeButton: true,
+                            closeOnClick: true,
+                            maxWidth: '260px'
+                        })
+                        .setLngLat(lngLat)
+                        .setHTML(popupContent)
+                        .addTo(this.mapOffline);
+                },
+                showDetail(featureId) {
+                    console.log(featureId); // ✅ BENAR
+                    this.loading = true;
+                    window.Livewire.find('<?php echo e($_instance->getId()); ?>').dispatch('viewDataKolam', {
+                        feature_id: featureId,
+                    });
+                },
+                zoomToPolygon(coordinates) {
+                    const bounds = new mapboxgl.LngLatBounds();
+
+                    // Polygon
+                    if (coordinates.length && typeof coordinates[0][0][0] === 'number') {
+                        coordinates[0].forEach(coord => bounds.extend(coord));
+                    }
+                    // MultiPolygon
+                    else {
+                        coordinates.forEach(polygon => {
+                            polygon[0].forEach(coord => bounds.extend(coord));
+                        });
+                    }
+
+                    this.mapOffline.fitBounds(bounds, {
+                        padding: 80,
+                        maxZoom: 18,
+                        duration: 800,
+                        easing: t => t * (2 - t), // smooth
+                    });
+                },
                 clickPolygonMaps() {
                     // Loop semua layer offline
                     this.offlineLayers.forEach(layer => {
@@ -433,13 +539,13 @@
                         // Tangkap klik pada layer polygon
                         this.mapOffline.on("click", layerId, (e) => {
                             const feature = e.features?.[0];
-
+                            const coordinates = feature.geometry.coordinates;
                             if (!feature) {
                                 console.warn("No feature clicked");
                                 return;
                             }
-                            // console.log(feature)
-                            // this.modalIsOpen = true;
+                            this.zoomToPolygon(coordinates);
+                            this.showPolygonPopup(feature, e.lngLat);
 
                             let featureId = feature.id ?? feature.properties?.feature_id;
 
@@ -447,23 +553,23 @@
                             // 2️⃣ UPDATE WARNA POLYGON 
                             // =====================================================
                             // --- 1. Update warna polygon ---
-                            const newColor = "#ef4444"; // merah
-                            const source = this.mapOffline.getSource(layerId);
-                            const data = source._data;
-                            // Reset semua polygon ke warna aslinya
-                            const clicked = data.features.find(f =>
-                                f.id == featureId
-                            );
-                            if (clicked) {
-                                // clicked.properties.is_kolam = 1;
-                            }
+                            // const newColor = "#ef4444"; // merah
+                            // const source = this.mapOffline.getSource(layerId);
+                            // const data = source._data;
+                            // // Reset semua polygon ke warna aslinya
+                            // const clicked = data.features.find(f =>
+                            //     f.id == featureId
+                            // );
+                            // if (clicked) {
+                            //     // clicked.properties.is_kolam = 1;
+                            // }
 
-                            this.loading = true;
-                            window.Livewire.find('<?php echo e($_instance->getId()); ?>').dispatch('viewDataKolam', {
-                                feature_id: featureId,
-                                polygon: feature.geometry.coordinates,
-                                clickpoint: e.lngLat
-                            });
+                            // this.loading = true;
+                            // window.Livewire.find('<?php echo e($_instance->getId()); ?>').dispatch('viewDataKolam', {
+                            //     feature_id: featureId,
+                            //     polygon: feature.geometry.coordinates,
+                            //     clickpoint: e.lngLat
+                            // });
 
                         });
 

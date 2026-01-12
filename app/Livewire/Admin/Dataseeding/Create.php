@@ -6,9 +6,10 @@ use Livewire\Component;
 use App\Models\DataKolam;
 use App\Models\DataSeeding;
 use Masmerise\Toaster\Toaster;
+use Carbon\Carbon;
 class Create extends Component
 {
-    public $tanggal_penebaran, $data_kolam_id, $jenis_benih, $jumlah_ikan, $berat_rata_rata, $keterangan;
+    public $tanggal_penebaran, $data_kolam_id, $jenis_benih, $jumlah_ikan, $berat_rata_rata, $keterangan, $estimated_days, $estimated_harvest_date;
 
     public function mount()
     {
@@ -18,11 +19,18 @@ class Create extends Component
         $this->jumlah_ikan = '';
         $this->berat_rata_rata = '';
         $this->keterangan = '';
+        $this->estimated_days = 0;
+        $this->estimated_harvest_date = '';
     }
 
     public function getKolamsProperty()
     {
         return DataKolam::forUser()->get();
+    }
+    public function updatedEstimatedDays()
+    {
+        $this->estimated_harvest_date = Carbon::parse($this->tanggal_penebaran)->addDays((int) $this->estimated_days)->format('Y-m-d');
+        // dump($this->estimated_harvest_date);
     }
     public function store()
     {
@@ -33,6 +41,8 @@ class Create extends Component
                 'jenis_benih' => 'required|string',
                 'jumlah_ikan' => 'required|integer',
                 'berat_rata_rata' => 'required|numeric',
+                'estimated_days' => 'required|numeric',
+                'estimated_harvest_date' => 'nullable|date',
                 'keterangan' => 'nullable|string',
             ],
             [
@@ -52,6 +62,8 @@ class Create extends Component
             'jumlah_ikan' => $this->jumlah_ikan,
             'berat_rata_rata' => $this->berat_rata_rata,
             'keterangan' => $this->keterangan,
+            'estimasi_days' => $this->estimated_days,
+            'estimated_harvest_date' => $this->estimated_harvest_date
         ]);
 
         Toaster::success('Data Seeding created!');

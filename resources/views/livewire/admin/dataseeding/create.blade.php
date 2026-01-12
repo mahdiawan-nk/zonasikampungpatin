@@ -32,6 +32,17 @@
         <flux:input wire:model="berat_rata_rata" type="text" placeholder="Masukkan berat rata rata ikan" />
         <flux:error name="berat_rata_rata" />
     </flux:field>
+    <flux:field>
+        <flux:label>Estimasi Hari</flux:label>
+        <flux:input wire:model.live.debounce.350ms="estimated_days" type="number"
+            placeholder="Masukkan estimasi hari" />
+        <flux:error name="estimated_days" />
+    </flux:field>
+    <flux:field>
+        <flux:label>Estimasi Tanggal Panen</flux:label>
+        <flux:input wire:model="estimated_harvest_date" type="date" readonly />
+        <flux:error name="estimated_harvest_date" />
+    </flux:field>
 
     <flux:field>
         <flux:label>Keterangan</flux:label>

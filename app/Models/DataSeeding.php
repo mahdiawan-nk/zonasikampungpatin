@@ -14,7 +14,14 @@ class DataSeeding extends Model
         'jenis_benih',
         'jumlah_ikan',
         'berat_rata_rata',
+        'estimated_days',
+        'estimated_harvest_date',
         'keterangan',
+    ];
+
+    protected $casts = [
+        'tanggal_penebaran' => 'date',
+        'estimated_harvest_date' => 'date',     
     ];
 
     public function kolam()

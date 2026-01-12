@@ -8,7 +8,8 @@ use App\Models\DataKolam;
 use App\Models\DataSeeding;
 use App\Models\DataEstimasiPanen as DataPanen;
 use App\Models\MapFeature;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
+
 class Dashboard extends Component
 {
     protected function isAdminData()
@@ -71,17 +72,16 @@ class Dashboard extends Component
             ->count();
     }
 
+
     public function getPanenProperty()
     {
-        return DataPanen::query()
-            ->with('dataSeeding.kolam')
+        return DataSeeding::query()
             ->when(!$this->isAdminData(), function ($query) {
-                return $query->whereHas('dataSeeding', function ($query) {
-                    $query->whereHas('kolam', function ($query) {
-                        $query->where('user_id', auth()->id());
-                    });
+                $query->whereHas('kolam', function ($q) {
+                    $q->where('user_id', auth()->id());
                 });
             })
+            ->whereNotNull('estimated_days')
             ->count();
     }
 
@@ -104,55 +104,30 @@ class Dashboard extends Component
     {
         $today = Carbon::today();
 
-        // H-14
-        $h14 = $today->copy()->addDays(14)->format('Y-m-d');
-        $estimasiH14 = DataPanen::with('dataSeeding')
-            ->when(!$this->isAdminData(), function ($query) {
-                return $query->whereHas('dataSeeding', function ($query) {
-                    $query->whereHas('kolam', function ($query) {
-                        $query->where('user_id', auth()->id());
+        $getEstimasi = function (int $hari) use ($today) {
+            $targetDate = $today->copy()->addDays($hari)->format('Y-m-d');
+            return DataSeeding::query()
+                ->with('kolam')
+                ->when(!$this->isAdminData(), function ($query) {
+                    $query->whereHas('kolam', function ($q) {
+                        $q->where('user_id', auth()->id());
                     });
-                });
-            })
-            ->whereDate('estimated_harvest_date', $h14)
-            ->orderBy('estimated_harvest_date', 'asc')
-            ->limit(5)
-            ->get();
-
-        // H-7
-        $h7 = $today->copy()->addDays(7)->format('Y-m-d');
-        $estimasiH7 = DataPanen::with('dataSeeding')
-            ->when(!$this->isAdminData(), function ($query) {
-                return $query->whereHas('dataSeeding', function ($query) {
-                    $query->whereHas('kolam', function ($query) {
-                        $query->where('user_id', auth()->id());
-                    });
-                });
-            })
-            ->whereDate('estimated_harvest_date', $h7)
-            ->orderBy('estimated_harvest_date', 'asc')
-            ->limit(5)
-            ->get();
-
-        // H-3
-        $h3 = $today->copy()->addDays(3)->format('Y-m-d');
-        $estimasiH3 = DataPanen::with('dataSeeding')
-            ->when(!$this->isAdminData(), function ($query) {
-                return $query->whereHas('dataSeeding', function ($query) {
-                    $query->whereHas('kolam', function ($query) {
-                        $query->where('user_id', auth()->id());
-                    });
-                });
-            })
-            ->whereDate('estimated_harvest_date', $h3)
-            ->orderBy('estimated_harvest_date', 'asc')
-            ->limit(5)
-            ->get();
-        return [
-            'H-14' => $estimasiH14,
-            'H-7' => $estimasiH7,
-            'H-3' => $estimasiH3,
+                })
+                ->whereRaw(
+                    "DATE_ADD(tanggal_penebaran, INTERVAL estimated_days DAY) = ?",
+                    [$targetDate]
+                )
+                ->orderBy('tanggal_penebaran')
+                ->limit(5)
+                ->get();
+        };
+        $data = [
+            'H-14' => $getEstimasi(14),
+            'H-7' => $getEstimasi(7),
+            'H-3' => $getEstimasi(3),
         ];
+
+        return $data;
     }
     public function render()
     {
